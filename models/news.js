@@ -3,11 +3,12 @@ const Schema = mongoose.Schema;
 
 const News = new Schema(
   {
-    avtUrl: String,
+    thumbnailUrl: String,
     title: String,
     description: String,
-    views: Number,
     content: String,
+    views: Number,
+    category: String,
   },
   { timestamps: true }
 );
