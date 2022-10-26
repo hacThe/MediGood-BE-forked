@@ -1,140 +1,46 @@
-const { populate } = require("../models/product");
 const Product = require("../models/product");
 const FilterConverter = require("../utils/filterConverter");
 
 class ProductController {
   getList = async (req, res) => {
-    // console.log("Vô nhầm route")
-    // params = {price: "1,299999999;5000000,6000000"}
-    // const params = req.query
-
-    // const sampleFilter = {
-    //   productType: ["wine"],
-    //   color: ["red"],
-    //   price: [
-    //     { _min: 1, _max: 700000 },
-    //     { _min: 30000, _max: 50000 },
-    //   ],
-    //   capacity: [750, 1000],
-    //   concentrationPercent: [
-    //     { _min: 1, _max: 29999 },
-    //     { _min: 30000, _max: 50000 },
-    //   ],
-    //   producer: ["Nhà tao", "Nhà ba tao"],
-    //   foods: ["Gà", "Bò", "Vịt"],
-    // };
-
-    const params = req.query;
-
+    const { query } = req;
     const queryElement = [];
-    if (params && params.productType && params.productType.includes("wine")) {
-      if (params.price) {
-        const querryPrice = FilterConverter.rangeFilter("price", params.price);
-        queryElement.push(querryPrice);
-      }
-
-      if (
-        params.concentrationPercent &&
-        params.concentrationPercent.length != 0
-      ) {
-        const querryPrice = FilterConverter.rangeFilter(
-          "concentrationPercent",
-          params.concentrationPercent
-        );
-        queryElement.push(querryPrice);
-      }
-
-      if (params.color && params.color.length != 0) {
+    if (query) {
+      if (query.category && query.category.length != 0) {
         const querryPrice = FilterConverter.multipleValuesFilter(
-          "color",
-          params.color
+          "category",
+          query.category
         );
         queryElement.push(querryPrice);
       }
-
-      if (params.capacity && params.capacity.length != 0) {
-        const querryPrice = FilterConverter.multipleValuesFilter(
-          "capacity",
-          params.capacity
-        );
+      if (query.price) {
+        const querryPrice = FilterConverter.rangeFilter("price", query.price);
         queryElement.push(querryPrice);
       }
-
-      if (params.producer && params.producer.length != 0) {
+      if (query.producer && query.producer.length != 0) {
         const querryPrice = FilterConverter.multipleValuesFilter(
           "producer",
-          params.producer
+          query.producer
         );
         queryElement.push(querryPrice);
       }
-
-      if (params.foods && params.foods.length != 0) {
-        const querryPrice = FilterConverter.multipleValuesInList(
-          "foods",
-          params.foods
-        );
-        queryElement.push(querryPrice);
+      if (query.age) {
+        const querryAge = FilterConverter.rangeFilterV2("age", query.age);
+        queryElement.push(querryAge);
       }
     }
-    queryElement.push({
-      productType: 'wine'
-    })
 
-    console.log("query element: ", queryElement);
+    console.log("========= query element =======");
     console.log(
       JSON.stringify(FilterConverter.combineFilter(queryElement), null, 2)
     );
 
-    //FilterConverter.combineFilter(queryElement)
     Product.find(FilterConverter.combineFilter(queryElement))
       .sort({ createdAt: -1 })
       .exec()
       .then((data) => {
-        // if ( params && params.price){
-        //   const minPrice = params.price.split(",")[0];
-        //   const maxPrice = par
-        // }
-
-       // console.log("dataaa: ", data);
         res.status(200).send(
-          JSON.stringify({
-            data: data,
-          })
-        );
-      })
-      .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
-
-  getListSpecialProduct = async (req, res) => {
-    const query = {
-      $or: [
-        {
-          productType: { $eq: "combo" },
-        },
-        {
-          productType: { $eq: "gift" },
-        },
-        {
-          isSpecialProduct: { $eq: true },
-        },
-        {
-          isNewProduct: { $eq: true },
-        },
-        {
-          isSaleProduct: { $eq: true },
-        },
-      ],
-    };
-    Product.find(query)
-      .sort({ createdAt: -1 })
-      .exec()
-      .then((data) => {
-        res.status(200).send(
-          JSON.stringify({
-            data: data,
-          })
+          JSON.stringify({ data })
         );
       })
       .catch((error) => {
@@ -262,7 +168,6 @@ class ProductController {
         });
         return cartItem;
       });
-      console.log("dataaa: ", data);
       res.status(200).send(
         JSON.stringify({
           data: data,
