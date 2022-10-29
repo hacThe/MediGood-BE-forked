@@ -18,7 +18,7 @@ const ProductSchema = new Schema(
     dosageForm: String,         // Dạng bào chế ( viên nén ... )
     note: String,               // Lưu ý
     aboutProduct: String,       // Mô tả thông tin sản phẩm <html string>
-    experation: Date,           // Hạn sử dụng
+    experation: String,           // Hạn sử dụng
     hasSold: Number,            // số lượng sản phẩm đã bán
   },
   { timestamps: true }
