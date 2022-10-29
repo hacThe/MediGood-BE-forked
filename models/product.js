@@ -13,8 +13,8 @@ const ProductSchema = new Schema(
     price: Number,              // Giá bán
     category: String,           // loại, danh mục
     origin: String,             // Xuất sứ
-    producer: String,           //Nhà sản xuất
-    age: String,                // Độ tuổi sử dụng
+    producer: String,           // Nhà sản xuất
+    age: [Number, Number],      // Độ tuổi [min, max]
     dosageForm: String,         // Dạng bào chế ( viên nén ... )
     note: String,               // Lưu ý
     aboutProduct: String,       // Mô tả thông tin sản phẩm <html string>

@@ -6,7 +6,6 @@ const { AuthMiddleware } = require("../helper/JWT");
 //--------
 //these router handle sign in and sign up
 router.get("/list", ProductController.getList);
-router.get("/listSpecialProduct", ProductController.getListSpecialProduct);
 router.get("/listAccessary", ProductController.getListAccessary);
 router.get("/:id", ProductController.getOne);
 router.post("/new", ProductController.create);
@@ -16,7 +15,6 @@ router.delete("/deleteMany", ProductController.deleteMany);
 
 router.post("/getProductsInCart", ProductController.getProductsInCart);
 //
-
 //--------
 //these router handle authentication and authorization
 
