@@ -1,6 +1,6 @@
-const User = require("../models/user");
-const saltRounds = 10;
-const bcrypt = require("bcrypt");
+const User = require("../models/user")
+const saltRounds = 10
+const bcrypt = require("bcrypt")
 
 class UserController {
   getList = async (req, res) => {
@@ -11,49 +11,49 @@ class UserController {
       .then((data) => {
         res.status(200).send(
           JSON.stringify({
-            data: data,
+            data: data
           })
-        );
+        )
       })
       .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
+        res.status(404).send(error)
+      })
+  }
 
   getOne = async (req, res) => {
     User.findById(req.params.id)
       .then((product) => {
         res.status(200).send(
           JSON.stringify({
-            data: product,
+            data: product
           })
-        );
+        )
       })
       .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
+        res.status(404).send(error)
+      })
+  }
 
   getCurrentUser = async (req, res) => {
-    const { email } = res.locals.data;
-    console.log({ email }, res.locals.data);
+    const { email } = res.locals.data
+    // console.log({ email }, res.locals.data);
     User.find({ email: email })
       .then((product) => {
         res.status(200).send(
           JSON.stringify({
-            data: product,
+            data: product
           })
-        );
+        )
       })
       .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
+        res.status(404).send(error)
+      })
+  }
 
   userAddToCart = async (req, res) => {
-    console.log("vao r ne");
-    const { email } = res.locals.data;
-    const newCartItem = req.body;
+    // console.log("vao r ne")
+    const { email } = res.locals.data
+    const newCartItem = req.body
     // newCartItem =
     //   {
     //     product: _id của product
@@ -61,144 +61,145 @@ class UserController {
     //     quantity: 4 // số lượng á Thành à :3
     //   }
     //
-    console.log({ email, newCartItem });
-    User.findOne({ email: email })
+    console
+      .log({ email, newCartItem })
+      // User.findOne({ email: email })
       .then((user) => {
-        console.log({ user });
-        let isExist = false;
+        // console.log({ user })
+        let isExist = false
         const editedCart = user.cart.map((item) => {
           if (item.product == newCartItem.product) {
-            item.quantity = item.quantity + newCartItem.quantity;
-            isExist = true;
+            item.quantity = item.quantity + newCartItem.quantity
+            isExist = true
           }
-          return item;
-        });
+          return item
+        })
         if (!isExist) {
-          editedCart.push(newCartItem);
+          editedCart.push(newCartItem)
         }
-        console.log({ editedCart });
-        user.cart = editedCart;
+        // console.log({ editedCart })
+        user.cart = editedCart
         user
           .save()
           .then((data) => {
             res.status(200).send(
               JSON.stringify({
-                data,
+                data
               })
-            );
+            )
           })
           .catch((error) => {
-            throw new Error("System failure!");
-          });
+            throw new Error("System failure!")
+          })
       })
       .catch((error) => {
-        res.status(404).send(JSON.stringify(error));
-      });
-  };
+        res.status(404).send(JSON.stringify(error))
+      })
+  }
 
   create = async (req, res) => {
-    const user = req.body;
+    const user = req.body
     const _user = new User({
       ...user,
-      password: bcrypt.hashSync(req.body.password, saltRounds),
-    });
+      password: bcrypt.hashSync(req.body.password, saltRounds)
+    })
 
-    console.log("debug 2", _user);
+    // console.log("debug 2", _user)
     _user
       .save()
       .then((data) => {
-        res.status(200).send(JSON.stringify(data));
+        res.status(200).send(JSON.stringify(data))
       })
       .catch((err) => {
-        console.log(err);
-        res.status(404).send(err);
-      });
-  };
+        // console.log(err)
+        res.status(404).send(err)
+      })
+  }
 
   update = async (req, res) => {
-    const id = req.params.id;
-    const user = req.body;
+    const id = req.params.id
+    const user = req.body
 
     User.findOneAndUpdate(
       {
-        _id: id,
+        _id: id
       },
       {
         $set: {
-          ...user,
-        },
+          ...user
+        }
       },
       {
-        returnOriginal: false,
+        returnOriginal: false
       },
       function (err, data) {
-        console.log({ err, data });
+        // console.log({ err, data })
         if (err) {
-          res.status(404).send(err);
+          res.status(404).send(err)
         } else {
-          res.status(200).send(JSON.stringify({ data }));
+          res.status(200).send(JSON.stringify({ data }))
         }
       }
-    );
-  };
+    )
+  }
 
   _delete = async (req, res) => {
     User.deleteOne({ _id: req.params.id }, function (err, data) {
-      console.log({ err, data });
+      // console.log({ err, data })
       if (err) {
-        res.status(404).send(err);
+        res.status(404).send(err)
       } else {
         res
           .status(200)
-          .send(JSON.stringify({ message: "Delete Successfully", data }));
+          .send(JSON.stringify({ message: "Delete Successfully", data }))
       }
-    });
-  };
+    })
+  }
 
   userEditCart = async (req, res) => {
     try {
-      const { email } = res.locals.data;
-      const newCartItem = req.body;
+      const { email } = res.locals.data
+      const newCartItem = req.body
 
-      const user = await User.findOne({ email: email }).exec();
-      if (!user) throw Error("user not found");
+      const user = await User.findOne({ email: email }).exec()
+      if (!user) throw Error("user not found")
 
-      var existID = -1;
-      console.log("user cart: ", user.cart);
+      var existID = -1
+      // console.log("user cart: ", user.cart)
       user.cart.forEach((item, idx) => {
         if (item.product == newCartItem.product) {
-          existID = idx;
+          existID = idx
         }
-      });
-      var editedCart = [];
+      })
+      var editedCart = []
       if (existID > -1) {
         if (newCartItem.quantity > 0)
           editedCart = [
             ...user.cart.slice(0, existID),
             newCartItem,
-            ...user.cart.slice(existID + 1),
-          ];
+            ...user.cart.slice(existID + 1)
+          ]
         else
           editedCart = [
             ...user.cart.slice(0, existID),
-            ...user.cart.slice(existID + 1),
-          ];
+            ...user.cart.slice(existID + 1)
+          ]
 
-        user.cart = editedCart;
-        user.save();
-        console.log("user after edit: ", user);
+        user.cart = editedCart
+        user.save()
+        // console.log("user after edit: ", user)
         res.status(200).send(
           JSON.stringify({
             user: user,
-            message: "edit cart success",
+            message: "edit cart success"
           })
-        );
+        )
       } else {
-        throw Error("cart item not found");
+        throw Error("cart item not found")
       }
     } catch (error) {
-      res.status(400).send(error.message);
+      res.status(400).send(error.message)
     }
-  };
+  }
 }
-module.exports = new UserController();
+module.exports = new UserController()
