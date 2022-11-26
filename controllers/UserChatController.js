@@ -1,23 +1,30 @@
 const bcrypt = require("bcrypt")
-const User = require("../models/user")
+const UserChat = require("../models/userChat")
 const Message = require("../models/message")
 class userChatController {
   sendMsgToAdmin = async (req, res) => {
     const { id, message } = req.body
+    console.log(req.body)
     const messageObj = await Message.findOne({ id })
+    if (!messageObj) {
+      res.status(200).json({
+        success: false,
+        message: "Chưa khởi tạo tin nhắn"
+      })
+    }
     messageObj.chat.push({
       message,
       time: new Date(),
       senderId: id
     })
     await messageObj.save()
-    const user = await User.findOne({ username: id })
-    user.chat = {
+    const userChat = await UserChat.findOne({ username: id })
+    userChat.chat = {
       id,
       lastMessage: { message, time: new Date(), senderId: id },
-      unseenMsgs: ++user.chat.unseenMsgs
+      unseenMsgs: ++userChat.chat.unseenMsgs
     }
-    await user.save()
+    await userChat.save()
     res.status(200).json({
       message: "Thành công"
     })
@@ -33,13 +40,13 @@ class userChatController {
       senderId: "admin"
     })
     await messageObj.save()
-    const user = await User.findOne({ username: id })
-    user.chat = {
+    const userChat = await UserChat.findOne({ username: id })
+    userChat.chat = {
       id,
       lastMessage: { message, time: new Date(), senderId: "admin" },
       unseenMsgs: 0
     }
-    await user.save()
+    await userChat.save()
     res.status(200).json({
       message: "Thành công"
     })
@@ -49,20 +56,20 @@ class userChatController {
     const { id } = req.query
 
     const message = await Message.findOne({ id }).exec()
-    const user = await User.findOne({ username: id }).exec()
-    user.chat = {
-      ...user.chat,
+    const userChat = await UserChat.findOne({ id: id }).exec()
+    userChat.chat = {
+      ...userChat.chat,
       unseenMsgs: 0
     }
-    await user.save()
+    await userChat.save()
     res.status(200).json({
       message,
-      user
+      userChat
     })
   }
 
   getAllUser = async (req, res) => {
-    User.find()
+    UserChat.find()
       .sort({ "chat.lastMessage.time": -1 })
       .then((result) => {
         res.status(200).json({
@@ -70,7 +77,7 @@ class userChatController {
         })
       })
       .catch((err) => {
-        res.status(400).json({
+        res.status(200).json({
           message: "Thất bại",
           err: err.message
         })
@@ -78,13 +85,13 @@ class userChatController {
   }
 
   addChatUser = async (req, res) => {
-    const check = await User.findOne({ username: req.body.name }).exec()
+    const check = await UserChat.findOne({ username: req.body.name }).exec()
     if (check) {
-      res.status(400).json({
+      res.status(200).json({
         message: "Thất bại"
       })
     } else {
-      const user = new User({
+      const userChat = new UserChat({
         username: req.body.name,
         fullName: req.body.name,
         chat: {
@@ -97,7 +104,7 @@ class userChatController {
         id: req.body.name,
         userId: req.body.name
       }).save()
-      user.save().then((resulst) => {
+      userChat.save().then((resulst) => {
         res.status(200).json({
           message: "Thành công",
           resulst
