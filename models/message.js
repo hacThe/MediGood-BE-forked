@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const messageSchema = new Schema({
   id: String,
-  userId: String,
+  userID: String,
   unseenMsgs: {
     type: Number,
     default: 0

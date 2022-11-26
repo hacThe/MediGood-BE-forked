@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 5000 // port number
 const app = express()
 const route = require("./routers/index") // router impl
 var morgan = require("morgan")
+const message = require("./models/message")
 app.use(morgan("combined"))
 const http = require("http").Server(app)
 
@@ -56,6 +57,10 @@ io.on("connection", (socket) => {
   socket.on("sendMessageToAdmin", (message) => {
     const user = users.user.filter((user) => user.id === socket.id)
     io.emit("getMessageFromUser", { message, user })
+  })
+
+  socket.on("sendMessageToUser", (val) => {
+    io.emit("getMessageFromAdmin", { message: val.message, userID: val.user })
   })
 
   socket.on("disconnect", () => {
