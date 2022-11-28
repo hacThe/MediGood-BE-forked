@@ -18,7 +18,7 @@ class userChatController {
       senderId: id
     })
     await messageObj.save()
-    const userChat = await UserChat.findOne({ username: id })
+    const userChat = await UserChat.findOne({ userID: id })
     userChat.chat = {
       id,
       lastMessage: { message, time: new Date(), senderId: id },
