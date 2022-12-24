@@ -1,4 +1,4 @@
-const News = require("../models/news");
+const News = require("../models/news")
 
 class NewsController {
   getList = async (req, res) => {
@@ -9,85 +9,85 @@ class NewsController {
       .then((data) => {
         res.status(200).send(
           JSON.stringify({
-            data: data,
+            data: data
           })
-        );
+        )
       })
       .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
+        res.status(404).send(error)
+      })
+  }
 
   getOne = async (req, res) => {
     News.findById(req.params.id)
       .then((product) => {
         res.status(200).send(
           JSON.stringify({
-            data: product,
+            data: product
           })
-        );
+        )
       })
       .catch((error) => {
-        res.status(404).send(error);
-      });
-  };
+        res.status(404).send(error)
+      })
+  }
 
   create = async (req, res) => {
-    const news = req.body;
+    const news = req.body
     const _news = new News({
-      ...news,
-    });
+      ...news
+    })
 
-    console.log("debug 2", _news);
+    // console.log("debug 2", _news);
     _news
       .save()
       .then((data) => {
-        res.status(200).send(JSON.stringify(data));
+        res.status(200).send(JSON.stringify(data))
       })
       .catch((err) => {
-        console.log(err);
-        res.status(404).send(err);
-      });
-  };
+        // console.log(err)
+        res.status(404).send(err)
+      })
+  }
 
   update = async (req, res) => {
-    const id = req.params.id;
-    const news = req.body;
+    const id = req.params.id
+    const news = req.body
 
     News.findOneAndUpdate(
       {
-        _id: id,
+        _id: id
       },
       {
         $set: {
-          ...news,
-        },
+          ...news
+        }
       },
       {
-        returnOriginal: false,
+        returnOriginal: false
       },
       function (err, data) {
-        console.log({ err, data });
+        // console.log({ err, data })
         if (err) {
-          res.status(404).send(err);
+          res.status(404).send(err)
         } else {
-          res.status(200).send(JSON.stringify({ data }));
+          res.status(200).send(JSON.stringify({ data }))
         }
       }
-    );
-  };
+    )
+  }
 
   _delete = async (req, res) => {
     News.deleteOne({ _id: req.params.id }, function (err, data) {
-      console.log({ err, data });
+      // console.log({ err, data })
       if (err) {
-        res.status(404).send(err);
+        res.status(404).send(err)
       } else {
         res
           .status(200)
-          .send(JSON.stringify({ message: "Delete Successfully", data }));
+          .send(JSON.stringify({ message: "Delete Successfully", data }))
       }
-    });
-  };
+    })
+  }
 }
-module.exports = new NewsController();
+module.exports = new NewsController()
